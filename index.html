@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toyota Sketchfab Slider</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0f1116;
+      --panel: rgba(10, 13, 20, 0.74);
+      --panel-border: rgba(255, 255, 255, 0.22);
+      --text: #f2f5ff;
+      --muted: #c4cbe1;
+      --btn-bg: rgba(12, 16, 26, 0.42);
+      --btn-bg-hover: rgba(20, 26, 40, 0.62);
+      --btn-border: rgba(255, 255, 255, 0.22);
+      --btn-icon: #eef3ff;
+      --controls-h: 32px;
+      --brand-badge-size: 32px;
+      --brand-left-offset: 18px;
+      --brand-bottom-offset: 10px;
+      --brand-gap: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 15% 10%, #1a2033 0%, #0f1116 50%, #090b10 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      isolation: isolate;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .bottom-controls {
+      pointer-events: auto;
+      position: fixed;
+      left: calc(
+        env(safe-area-inset-left, 0px) +
+        var(--brand-left-offset) +
+        var(--brand-badge-size) +
+        var(--brand-gap)
+      ) !important;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + var(--brand-bottom-offset)) !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: auto;
+      height: var(--controls-h);
+      max-width: calc(
+        100vw -
+        (
+          var(--brand-left-offset) +
+          var(--brand-badge-size) +
+          var(--brand-gap) +
+          20px
+        )
+      );
+    }
+
+    .arrow {
+      flex: 0 0 var(--controls-h);
+      width: var(--controls-h);
+      height: var(--controls-h);
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      background: var(--panel);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      backdrop-filter: blur(5px);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+      transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .arrow:hover {
+      background: rgba(21, 28, 42, 0.82);
+      border-color: rgba(255, 255, 255, 0.34);
+    }
+
+    .arrow:active { transform: scale(0.95); }
+
+    .arrow-icon {
+      width: 16px;
+      height: 16px;
+      display: block;
+      transform: translateY(0.5px);
+      filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+    }
+
+    .arrow-icon path {
+      fill: none;
+      stroke: var(--btn-icon);
+      stroke-width: 2.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .arrow:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.85);
+      outline-offset: 3px;
+    }
+
+    .caption {
+      flex: 0 1 auto;
+      width: fit-content;
+      max-width: min(52vw, 360px);
+      min-width: 0;
+      height: var(--controls-h);
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      text-align: center;
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .title {
+      display: none;
+    }
+
+    .meta {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      transform: translateY(0.5px);
+    }
+
+    @media (max-width: 700px) {}
+  </style>
+</head>
+<body>
+  <div class="slider">
+    <iframe
+      id="viewer"
+      title="Toyota Sketchfab Slider"
+      allowfullscreen
+      mozallowfullscreen="true"
+      webkitallowfullscreen="true"
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+      xr-spatial-tracking
+      execution-while-out-of-viewport
+      execution-while-not-rendered
+      web-share
+    ></iframe>
+
+    <div class="overlay">
+      <div class="bottom-controls">
+        <button id="prevBtn" class="arrow arrow-left" aria-label="Previous model">
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4.5L8 12l7.5 7.5"></path></svg>
+        </button>
+        <div class="caption">
+          <p id="modelTitle" class="title"></p>
+          <p id="modelMeta" class="meta"></p>
+        </div>
+        <button id="nextBtn" class="arrow arrow-right" aria-label="Next model">
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5L16 12l-7.5 7.5"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const startModel = {
+      url: "https://sketchfab.com/models/09ddd8b1d29b437baa1cde9c5669bd59/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_stop=0",
+      title: "Toyota Starter Model"
+    };
+
+    const models = [
+      { url: "https://sketchfab.com/3d-models/toyota-fj80-landcruiser-60942532bfc248c4985f04329657eb50", title: "Toyota FJ80 Landcruiser" },
+      { url: "https://sketchfab.com/3d-models/2024-toyota-land-cruiser-250-first-edition-26458d2f6450404d84dd70d42cd41ac4", title: "2024 Toyota Land Cruiser 250 First Edition" },
+      { url: "https://sketchfab.com/3d-models/wrc-toyota-gr-yaris-rally1-99acc44d75bc47de9bd4b55da6a4c6f1", title: "WRC Toyota GR Yaris Rally1" },
+      { url: "https://sketchfab.com/3d-models/toyota-raize-with-interior-d08c1b39cbec4eb192190a86721e25de", title: "Toyota Raize with Interior" },
+      { url: "https://sketchfab.com/3d-models/toyota-gt86-rocketbunny-e6c1d528a2b841d6828ddc67553968a2", title: "Toyota GT86 RocketBunny" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-7d291f1ac7644e7f9a7459398cb4d56f", title: "Toyota Supra" },
+      { url: "https://sketchfab.com/3d-models/tented-toyota-camry-car-possibly-wrecked-7abbeb33448d410cbc492e24e39c0631", title: "Tented Toyota Camry, Car Possibly Wrecked" },
+      { url: "https://sketchfab.com/3d-models/toyota-land-cruiser-300-066d2a37f1e34c63a68a7cffd9e20a49", title: "Toyota Land Cruiser 300" },
+      { url: "https://sketchfab.com/3d-models/toyota-land-cruiser-j70-5-door-1990-16433bdec86d4cc9a780945694a1964b", title: "Toyota Land Cruiser (J70) 5-door 1990" },
+      { url: "https://sketchfab.com/3d-models/toyota-celica-wrc-carlos-sainz-1991-37d83bdfd37a4da28e5e008543f544cc", title: "Toyota Celica WRC Carlos Sainz 1991" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-widebody-red-eye-edition-9020eda7f5ba4250adb4080ca2bf61a4", title: "Toyota Supra Widebody (RED-EYE EDITION)" },
+      { url: "https://sketchfab.com/3d-models/2018-toyota-gr-super-sport-concept-d935e128f300417ebc23a8d3f1159d9e", title: "2018 Toyota GR Super Sport Concept" },
+      { url: "https://sketchfab.com/3d-models/toyota-highlander-2020-ff144d062f244a3ebfae71bc2a41564b", title: "Toyota Highlander 2020" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-gr-2020-lb-widebody-kit-f7e38b8fd1e542b9ba4664602b88b398", title: "Toyota Supra GR 2020 LB Widebody Kit" },
+      { url: "https://sketchfab.com/3d-models/toyota-gr-supra-super-gt-a4c8879f36fb45d69d05ad0bb746ddd7", title: "Toyota GR Supra Super GT" },
+      { url: "https://sketchfab.com/3d-models/toyota-fortuner-gen-3-offroad-mod-knitro-builds-3ccacfd8826a497b9f080a6a7caf150c", title: "Toyota Fortuner Gen 3 OffRoad MOD" },
+      { url: "https://sketchfab.com/3d-models/toyota-logo-5b7d9541bb074e81a1753fb266fb3bf9", title: "Toyota Logo" },
+      { url: "https://sketchfab.com/3d-models/toyota-land-cruiser-300-10ab423f78314e5d8987ae7354474e97", title: "Toyota Land Cruiser 300 (34d.xyz)" },
+      { url: "https://sketchfab.com/3d-models/subaru-l-series-4wd-1990-sports-wagon-eda7ebfd196f4ef9970b18379c7727d9", title: "Subaru L Series 4WD 1990 Sports Wagon" },
+      { url: "https://sketchfab.com/3d-models/toyota-proace-electric-van-2023-b4f2accc7dda43b9829a5723d26155f6", title: "Toyota Proace Electric Van 2023" },
+      { url: "https://sketchfab.com/3d-models/toyota-gr-corolla-morizo-edition-e14fc132d13a4d09a01181341c70e690", title: "Toyota GR Corolla MORIZO Edition" },
+      { url: "https://sketchfab.com/3d-models/toyota-fj-cruiser-offroad-ceff429f9ff94bb7a466f1ed25d309db", title: "Toyota FJ Cruiser Offroad" },
+      { url: "https://sketchfab.com/3d-models/toyota-rav4-2019-b144c00c051a4aeea29c585bcf09f67d", title: "Toyota RAV4 2019" },
+      { url: "https://sketchfab.com/3d-models/toyotagr-supra-gt300-wwwvecarzcom-1666c35171b649a8a927da53bdadf228", title: "ToyotaGR Supra GT300" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-mk-iv-1994-eb9bb1eb41db431cb078088ae1ce45f8", title: "Toyota Supra MK IV (1994)" },
+      { url: "https://sketchfab.com/3d-models/toyota-ae86-sprinter-trueno-zenki-a5737bf3cc9b4179a6e5ebe173ff70d9", title: "Toyota AE86 Sprinter Trueno Zenki" },
+      { url: "https://sketchfab.com/3d-models/toyota-ae86-black-limited-kouki-80854ba302034431b517f523db328129", title: "Toyota AE86 Black Limited Kouki" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-dekztrax-34-d86f2a93aaac4a79ac06c7f790255de6", title: "Toyota Supra DEKZTRAX [34]" },
+      { url: "https://sketchfab.com/3d-models/toyota-hilux-revo-prerunner-2021-04ae6d8e07e84f55a9e1d7e3261be171", title: "Toyota Hilux Revo Prerunner 2021" },
+      { url: "https://sketchfab.com/3d-models/toyota-kijang-innova-zenix-2023-highpoly-c8e1bbc9292b4e198dba839c32f02fa9", title: "Toyota Kijang Innova Zenix 2023 (highpoly)" },
+      { url: "https://sketchfab.com/3d-models/toyota-ft-1-vision-gt-e6b7292bcd974a2d929f2d06465e6cdb", title: "Toyota FT-1 Vision GT" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-gt500-wwwvecarzcom-8b0fcf1219b84898a7da17073bf24bc6", title: "Toyota Supra GT500" },
+      { url: "https://sketchfab.com/3d-models/2025-toyota-land-cruiser-250-b53e78d5e3474474a788e7ef4deccda0", title: "2025 Toyota Land Cruiser 250" },
+      { url: "https://sketchfab.com/3d-models/low-poly-car-toyota-aa-1940-5ee2821bb03a45e4b35a527118064a2e", title: "Low Poly Car - Toyota AA 1940" },
+      { url: "https://sketchfab.com/3d-models/toyota-gr-yaris-rally-wrc-wwwvecarzcom-1c2ce5ff548f4ab49d72183d1e0f2afe", title: "Toyota GR Yaris Rally WRC" },
+      { url: "https://sketchfab.com/3d-models/toyota-corolla-2008-38096dd8774a4cfbac4dd6861d433ab0", title: "Toyota Corolla 2008" },
+      { url: "https://sketchfab.com/3d-models/toyota-concept-i-687e61ceb62a48e897cd75312ae54868", title: "Toyota Concept-i" },
+      { url: "https://sketchfab.com/3d-models/radio-for-toyota-b56801a6f2854f52846f9da98e489128", title: "Radio For Toyota" },
+      { url: "https://sketchfab.com/3d-models/toyota-corolla-e170-2017-d87af59849814c5cb35a0c233f2c2f19", title: "Toyota Corolla E170 2017" },
+      { url: "https://sketchfab.com/3d-models/toyota-van-1982-d3b5955e74cc4c619c4658a0e7104f42", title: "Toyota Van 1982" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-gt500-2005-5304482b7dae47139228c9714f652a1d", title: "Toyota Supra GT500 (2005)" },
+      { url: "https://sketchfab.com/3d-models/toyota-land-cruiser-2021-58934d346fd345e8a08cd1fdf01015ce", title: "Toyota Land Cruiser 2021" },
+      { url: "https://sketchfab.com/3d-models/toyota-gr-supra-gt-gt300-58efbe2b2e144d8e8edfcc0c64e55f88", title: "Toyota GR Supra GT GT300" },
+      { url: "https://sketchfab.com/3d-models/toyota-ae86-fujiwara-tofu-shop-ddfbecd0fbbe4cf886991aa2d941eb53", title: "Toyota AE86: Fujiwara Tofu Shop" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-mk4-a80-61d402d6de904374bfe5a98907c85b1d", title: "Toyota Supra MK4 A80" },
+      { url: "https://sketchfab.com/3d-models/t-test-8aabfe57f701484e931af017e01d1c4a", title: "Toyota T Test" },
+      { url: "https://sketchfab.com/3d-models/2020-lbworks-toyota-supra-a90-ver2-763022501b4644bc8fbe55f95cce39e0", title: "2020 LBWORKS Toyota Supra (A90) ver.2" },
+      { url: "https://sketchfab.com/3d-models/toyota-camry-2020-236a5a6e2fa6420fbdf641f4800cd544", title: "Toyota Camry 2020" },
+      { url: "https://sketchfab.com/3d-models/toyota-mark-x-interior-yuxdesign-high-polygon-1a35e1e2c88a4888a83fb9c175b44168", title: "Toyota Mark X Interior Yuxdesign high polygon" },
+      { url: "https://sketchfab.com/3d-models/toyota-baby-lunar-cruiser-f0e9ea4373f6446984ae292f38bd0af3", title: "Toyota Baby Lunar Cruiser" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-gr-gt4-steering-wheel-b783e2d6c1eb4d9b89599cc523bdb170", title: "Toyota Supra GR GT4 Steering Wheel" },
+      { url: "https://sketchfab.com/3d-models/toyota-yaris-echo-4-door-xp10-widebody-1c534c998a73467ba67ff88a2edc88b3", title: "Toyota Yaris / Echo 4-Door XP10 Widebody" },
+      { url: "https://sketchfab.com/3d-models/drifting-ae86-slow-motion-animated-version-a2a20f8c319c4ecab8d1e34dcc1ae090", title: "Drifting AE86 - Slow Motion Animated Version" },
+      { url: "https://sketchfab.com/3d-models/seratora-9bee33b9573444dda9d3fb0df2c2981e", title: "SERATORA" },
+      { url: "https://sketchfab.com/3d-models/toyota-prius-prime-2023-highpoly-211315d8e62246e0b64498b14b8f153d", title: "Toyota Prius Prime 2023 Highpoly" },
+      { url: "https://sketchfab.com/3d-models/toyota-supra-2020-c7547986dc2945828a908102e09d9836", title: "Toyota Supra 2020" }
+    ];
+
+    const iframe = document.getElementById("viewer");
+    const titleEl = document.getElementById("modelTitle");
+    const metaEl = document.getElementById("modelMeta");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function shuffled(items) {
+      const copy = items.slice();
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    const playlist = [startModel, ...shuffled(models)];
+    let current = 0;
+
+    function toEmbedUrl(pageUrl) {
+      if (pageUrl.includes("/models/") && pageUrl.includes("/embed")) {
+        const embedUrl = new URL(pageUrl);
+        embedUrl.searchParams.set("autostart", "1");
+        embedUrl.searchParams.set("ui_theme", "dark");
+        embedUrl.searchParams.set("ui_infos", "0");
+        embedUrl.searchParams.set("ui_stop", "0");
+        return embedUrl.toString();
+      }
+
+      const match = pageUrl.match(/-([a-f0-9]{32})(?:$|[/?#])/i);
+      if (!match) return pageUrl;
+      return "https://sketchfab.com/models/" + match[1] + "/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_stop=0";
+    }
+
+    function render(index) {
+      current = (index + playlist.length) % playlist.length;
+      const model = playlist[current];
+      iframe.src = toEmbedUrl(model.url);
+      titleEl.textContent = model.title;
+      metaEl.textContent = (current + 1) + " / " + playlist.length;
+    }
+
+    prevBtn.addEventListener("click", () => render(current - 1));
+    nextBtn.addEventListener("click", () => render(current + 1));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowLeft") render(current - 1);
+      if (event.key === "ArrowRight") render(current + 1);
+    });
+
+    render(0);
+  </script>
+</body>
+</html>
