@@ -22,6 +22,8 @@
       --brand-left-offset: 18px;
       --brand-bottom-offset: 10px;
       --brand-gap: 10px;
+      --side-ui-size: 32px;
+      --side-ui-offset: 10px;
     }
 
     * { box-sizing: border-box; }
@@ -128,11 +130,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: background-color 0.2s ease;
-    }
-
-    .caption:hover {
-      background: var(--panel-hover);
     }
 
     .title {
@@ -148,7 +145,13 @@
       transform: none;
     }
 
-    @media (max-width: 700px) {}
+    @media (max-width: 900px) {
+      .bottom-controls {
+        left: auto !important;
+        right: calc(var(--side-ui-offset) + var(--side-ui-size) + 6px);
+        transform: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -169,14 +172,14 @@
     <div class="overlay">
       <div class="bottom-controls">
         <button id="prevBtn" class="arrow arrow-left" aria-label="Previous model">
-          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 2.6L5.2 12l9.4 9.4 3.2-3.2L11.6 12l6.2-6.2z"></path></svg>
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4L8 12L16 20Z"></path></svg>
         </button>
         <div class="caption">
           <p id="modelTitle" class="title"></p>
           <p id="modelMeta" class="meta"></p>
         </div>
         <button id="nextBtn" class="arrow arrow-right" aria-label="Next model">
-          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 2.6L6.2 5.8 12.4 12l-6.2 6.2 3.2 3.2 9.4-9.4z"></path></svg>
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4L16 12L8 20Z"></path></svg>
         </button>
       </div>
     </div>
