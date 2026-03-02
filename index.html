@@ -67,7 +67,7 @@
       left: 10px !important;
       right: auto !important;
       top: auto !important;
-      bottom: calc(10px + var(--brand-badge-size) + 20px) !important;
+      bottom: calc(10px + var(--brand-badge-size) + 20px + 5px) !important;
       transform: none;
       display: flex;
       flex-direction: column;
@@ -101,9 +101,16 @@
 
     .arrow:active { transform: scale(0.95); }
 
-    .arrow-left,
+    .arrow-left {
+      position: relative;
+      left: auto;
+      right: -1px;
+    }
+
     .arrow-right {
-      position: static;
+      position: relative;
+      right: auto;
+      left: -1px;
     }
 
     .arrow-icon {
