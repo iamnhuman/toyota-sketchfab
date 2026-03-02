@@ -8,7 +8,8 @@
     :root {
       color-scheme: dark;
       --bg: #0f1116;
-      --panel: rgba(10, 13, 20, 0.74);
+      --panel: rgba(0, 0, 0, 0.4);
+      --panel-hover: rgba(0, 0, 0, 0.7);
       --panel-border: rgba(255, 255, 255, 0.22);
       --text: #f2f5ff;
       --muted: #c4cbe1;
@@ -61,34 +62,22 @@
     .bottom-controls {
       pointer-events: auto;
       position: fixed;
-      left: calc(
-        env(safe-area-inset-left, 0px) +
-        var(--brand-left-offset) +
-        var(--brand-badge-size) +
-        var(--brand-gap)
-      ) !important;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + var(--brand-bottom-offset)) !important;
+      left: 50% !important;
+      transform: translateX(-50%);
+      top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
       display: flex;
       align-items: center;
       gap: 8px;
       width: auto;
       height: var(--controls-h);
-      max-width: calc(
-        100vw -
-        (
-          var(--brand-left-offset) +
-          var(--brand-badge-size) +
-          var(--brand-gap) +
-          20px
-        )
-      );
+      max-width: calc(100vw - 20px);
     }
 
     .arrow {
       flex: 0 0 var(--controls-h);
       width: var(--controls-h);
       height: var(--controls-h);
-      border: 1px solid var(--panel-border);
+      border: none;
       border-radius: 999px;
       background: var(--panel);
       display: flex;
@@ -97,13 +86,12 @@
       cursor: pointer;
       user-select: none;
       backdrop-filter: blur(5px);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-      transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+      box-shadow: none;
+      transition: background-color 0.2s ease, transform 0.2s ease;
     }
 
     .arrow:hover {
-      background: rgba(21, 28, 42, 0.82);
-      border-color: rgba(255, 255, 255, 0.34);
+      background: var(--panel-hover);
     }
 
     .arrow:active { transform: scale(0.95); }
@@ -117,16 +105,12 @@
     }
 
     .arrow-icon path {
-      fill: none;
-      stroke: var(--btn-icon);
-      stroke-width: 2.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      fill: #ffffff;
+      stroke: none;
     }
 
     .arrow:focus-visible {
-      outline: 2px solid rgba(255, 255, 255, 0.85);
-      outline-offset: 3px;
+      outline: none;
     }
 
     .caption {
@@ -138,12 +122,17 @@
       padding: 0 18px;
       border-radius: 999px;
       background: var(--panel);
-      border: 1px solid var(--panel-border);
+      border: none;
       text-align: center;
       backdrop-filter: blur(5px);
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .caption:hover {
+      background: var(--panel-hover);
     }
 
     .title {
@@ -152,11 +141,11 @@
 
     .meta {
       margin: 0;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 600;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 400;
       line-height: 1;
-      transform: translateY(0.5px);
+      transform: none;
     }
 
     @media (max-width: 700px) {}
@@ -180,14 +169,14 @@
     <div class="overlay">
       <div class="bottom-controls">
         <button id="prevBtn" class="arrow arrow-left" aria-label="Previous model">
-          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 4.5L8 12l7.5 7.5"></path></svg>
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 2.6L5.2 12l9.4 9.4 3.2-3.2L11.6 12l6.2-6.2z"></path></svg>
         </button>
         <div class="caption">
           <p id="modelTitle" class="title"></p>
           <p id="modelMeta" class="meta"></p>
         </div>
         <button id="nextBtn" class="arrow arrow-right" aria-label="Next model">
-          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 4.5L16 12l-7.5 7.5"></path></svg>
+          <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.4 2.6L6.2 5.8 12.4 12l-6.2 6.2 3.2 3.2 9.4-9.4z"></path></svg>
         </button>
       </div>
     </div>
