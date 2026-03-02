@@ -101,18 +101,6 @@
 
     .arrow:active { transform: scale(0.95); }
 
-    .arrow-left {
-      position: relative;
-      left: auto;
-      right: -1px;
-    }
-
-    .arrow-right {
-      position: relative;
-      right: auto;
-      left: -1px;
-    }
-
     .arrow-icon {
       width: 16px;
       height: 16px;
@@ -161,6 +149,10 @@
       white-space: nowrap;
     }
 
+    .meta.meta-compact {
+      font-size: 8px;
+    }
+
     @media (max-width: 900px) {}
   </style>
 </head>
@@ -181,14 +173,14 @@
 
     <div class="overlay">
       <div class="bottom-controls">
-        <button id="prevBtn" class="arrow arrow-left" aria-label="Previous model">
+        <button id="prevBtn" class="arrow" aria-label="Previous model">
           <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4L8 12L16 20Z"></path></svg>
         </button>
         <div class="caption">
           <p id="modelTitle" class="title"></p>
           <p id="modelMeta" class="meta"></p>
         </div>
-        <button id="nextBtn" class="arrow arrow-right" aria-label="Next model">
+        <button id="nextBtn" class="arrow" aria-label="Next model">
           <svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4L16 12L8 20Z"></path></svg>
         </button>
       </div>
@@ -215,11 +207,9 @@
       { url: "https://sketchfab.com/3d-models/toyota-supra-widebody-red-eye-edition-9020eda7f5ba4250adb4080ca2bf61a4", title: "Toyota Supra Widebody (RED-EYE EDITION)" },
       { url: "https://sketchfab.com/3d-models/2018-toyota-gr-super-sport-concept-d935e128f300417ebc23a8d3f1159d9e", title: "2018 Toyota GR Super Sport Concept" },
       { url: "https://sketchfab.com/3d-models/toyota-highlander-2020-ff144d062f244a3ebfae71bc2a41564b", title: "Toyota Highlander 2020" },
-      { url: "https://sketchfab.com/3d-models/toyota-supra-gr-2020-lb-widebody-kit-f7e38b8fd1e542b9ba4664602b88b398", title: "Toyota Supra GR 2020 LB Widebody Kit" },
       { url: "https://sketchfab.com/3d-models/toyota-gr-supra-super-gt-a4c8879f36fb45d69d05ad0bb746ddd7", title: "Toyota GR Supra Super GT" },
       { url: "https://sketchfab.com/3d-models/toyota-fortuner-gen-3-offroad-mod-knitro-builds-3ccacfd8826a497b9f080a6a7caf150c", title: "Toyota Fortuner Gen 3 OffRoad MOD" },
       { url: "https://sketchfab.com/3d-models/toyota-logo-5b7d9541bb074e81a1753fb266fb3bf9", title: "Toyota Logo" },
-      { url: "https://sketchfab.com/3d-models/toyota-land-cruiser-300-10ab423f78314e5d8987ae7354474e97", title: "Toyota Land Cruiser 300 (34d.xyz)" },
       { url: "https://sketchfab.com/3d-models/subaru-l-series-4wd-1990-sports-wagon-eda7ebfd196f4ef9970b18379c7727d9", title: "Subaru L Series 4WD 1990 Sports Wagon" },
       { url: "https://sketchfab.com/3d-models/toyota-proace-electric-van-2023-b4f2accc7dda43b9829a5723d26155f6", title: "Toyota Proace Electric Van 2023" },
       { url: "https://sketchfab.com/3d-models/toyota-gr-corolla-morizo-edition-e14fc132d13a4d09a01181341c70e690", title: "Toyota GR Corolla MORIZO Edition" },
@@ -305,7 +295,11 @@
       const model = playlist[current];
       iframe.src = toEmbedUrl(model.url);
       titleEl.textContent = model.title;
-      metaEl.textContent = (current + 1) + "/" + playlist.length;
+      const currentPage = current + 1;
+      const totalPages = playlist.length;
+      const digitsCount = String(currentPage).length + String(totalPages).length;
+      metaEl.classList.toggle("meta-compact", digitsCount >= 4);
+      metaEl.textContent = currentPage + "/" + totalPages;
     }
 
     prevBtn.addEventListener("click", () => render(current - 1));
