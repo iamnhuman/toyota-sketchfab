@@ -64,15 +64,18 @@
     .bottom-controls {
       pointer-events: auto;
       position: fixed;
-      left: 50% !important;
-      transform: translateX(-50%);
-      top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+      left: 10px !important;
+      right: auto !important;
+      top: auto !important;
+      bottom: calc(10px + var(--brand-badge-size) + 20px) !important;
+      transform: none;
       display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 8px;
       width: auto;
-      height: var(--controls-h);
-      max-width: calc(100vw - 20px);
+      height: auto;
+      max-width: min(52vw, 360px);
     }
 
     .arrow {
@@ -98,6 +101,11 @@
 
     .arrow:active { transform: scale(0.95); }
 
+    .arrow-left,
+    .arrow-right {
+      position: static;
+    }
+
     .arrow-icon {
       width: 16px;
       height: 16px;
@@ -116,20 +124,20 @@
     }
 
     .caption {
-      flex: 0 1 auto;
-      width: fit-content;
-      max-width: min(52vw, 360px);
-      min-width: 0;
+      flex: 0 0 var(--controls-h);
+      width: var(--controls-h);
+      max-width: none;
+      min-width: var(--controls-h);
       height: var(--controls-h);
-      padding: 0 18px;
+      padding: 0;
       border-radius: 999px;
       background: var(--panel);
       border: none;
       text-align: center;
       backdrop-filter: blur(5px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
     }
 
     .title {
@@ -139,19 +147,14 @@
     .meta {
       margin: 0;
       color: #ffffff;
-      font-size: 13px;
+      font-size: 10px;
       font-weight: 400;
       line-height: 1;
       transform: none;
+      white-space: nowrap;
     }
 
-    @media (max-width: 900px) {
-      .bottom-controls {
-        left: auto !important;
-        right: calc(var(--side-ui-offset) + var(--side-ui-size) + 6px);
-        transform: none;
-      }
-    }
+    @media (max-width: 900px) {}
   </style>
 </head>
 <body>
@@ -187,7 +190,7 @@
 
   <script>
     const startModel = {
-      url: "https://sketchfab.com/models/09ddd8b1d29b437baa1cde9c5669bd59/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_stop=0",
+      url: "https://sketchfab.com/models/09ddd8b1d29b437baa1cde9c5669bd59/embed?autostart=1&ui_theme=dark&ui_controls=0&ui_infos=0&ui_stop=0&ui_help=0&ui_settings=0&ui_inspector=0&ui_annotations=0&ui_vr=0&ui_fullscreen=0",
       title: "Toyota Starter Model"
     };
 
@@ -273,14 +276,21 @@
         const embedUrl = new URL(pageUrl);
         embedUrl.searchParams.set("autostart", "1");
         embedUrl.searchParams.set("ui_theme", "dark");
+        embedUrl.searchParams.set("ui_controls", "0");
         embedUrl.searchParams.set("ui_infos", "0");
         embedUrl.searchParams.set("ui_stop", "0");
+        embedUrl.searchParams.set("ui_help", "0");
+        embedUrl.searchParams.set("ui_settings", "0");
+        embedUrl.searchParams.set("ui_inspector", "0");
+        embedUrl.searchParams.set("ui_annotations", "0");
+        embedUrl.searchParams.set("ui_vr", "0");
+        embedUrl.searchParams.set("ui_fullscreen", "0");
         return embedUrl.toString();
       }
 
       const match = pageUrl.match(/-([a-f0-9]{32})(?:$|[/?#])/i);
       if (!match) return pageUrl;
-      return "https://sketchfab.com/models/" + match[1] + "/embed?autostart=1&ui_theme=dark&ui_infos=0&ui_stop=0";
+      return "https://sketchfab.com/models/" + match[1] + "/embed?autostart=1&ui_theme=dark&ui_controls=0&ui_infos=0&ui_stop=0&ui_help=0&ui_settings=0&ui_inspector=0&ui_annotations=0&ui_vr=0&ui_fullscreen=0";
     }
 
     function render(index) {
@@ -288,7 +298,7 @@
       const model = playlist[current];
       iframe.src = toEmbedUrl(model.url);
       titleEl.textContent = model.title;
-      metaEl.textContent = (current + 1) + " / " + playlist.length;
+      metaEl.textContent = (current + 1) + "/" + playlist.length;
     }
 
     prevBtn.addEventListener("click", () => render(current - 1));
